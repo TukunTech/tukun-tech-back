@@ -52,3 +52,15 @@ cors:
     - "*"
   allow-credentials: true
 
+app:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:change-me-please-change-me-256bits-key!}
+      issuer: tukuntech                # <-- añade esto
+      access-token-expiration: ${JWT_ACCESS_EXPIRATION:1800000}
+      refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:1209600000}
+      maximum-sessions: ${JWT_MAX_SESSIONS:5}
+  seed:
+    enabled: ${APP_SEED_ENABLED:false}
+
+
