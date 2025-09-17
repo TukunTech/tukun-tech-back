@@ -62,6 +62,32 @@ public class DevSeed implements CommandLineRunner {
             return userRepository.save(u);
         });
         System.out.println("User: admin@tukuntech.com / Pss: Admin123");
+
+        userRepository.findByEmail("attendant@tukuntech.com").orElseGet(() -> {
+            var u = new UserEntity();
+            u.setFirstName("Attendant");
+            u.setLastName("User");
+            u.setDni("11111111"); // cambia si quieres
+            u.setEmail("attendant@tukuntech.com");
+            u.setPassword(encoder.encode("Attendant123"));
+            u.setEnabled(true);
+            u.getRoles().add(attendant);
+            return userRepository.save(u);
+        });
+        System.out.println("User: attendant@tukuntech.com / Pss: Attendant123");
+
+        userRepository.findByEmail("patient@tukuntech.com").orElseGet(() -> {
+            var u = new UserEntity();
+            u.setFirstName("Patient");
+            u.setLastName("User");
+            u.setDni("22222222");
+            u.setEmail("patient@tukuntech.com");
+            u.setPassword(encoder.encode("Patient123"));
+            u.setEnabled(true);
+            u.getRoles().add(patient);
+            return userRepository.save(u);
+        });
+        System.out.println("User: patient@tukuntech.com / Pss: Patient123");
     }
 
     private static PermissionEntity newPerm(String name) {

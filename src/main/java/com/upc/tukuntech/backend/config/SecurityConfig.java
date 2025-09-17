@@ -1,72 +1,61 @@
 package com.upc.tukuntech.backend.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.upc.tukuntech.backend.shared.api.ApiError;
-import jakarta.servlet.http.HttpServletRequest;
+import com.upc.tukuntech.backend.shared.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import java.io.IOException;
 
 @Configuration
+@EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AuthenticationProvider authenticationProvider;
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .httpBasic(b -> b.disable())
-                .formLogin(f -> f.disable())
-
-                .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(this::write401)
-                        .accessDeniedHandler(this::write403)
-                )
-
-                .authorizeHttpRequests(reg -> reg
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(authenticationProvider)
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/swagger-ui.html", "/swagger-ui/**",
-                                "/api-docs/**", "/v3/api-docs/**",
-                                "/actuator/health",
-                                "/auth/login"
+                                "/auth/login",
+                                "/auth/refresh",
+                                "/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/actuator/**"
                         ).permitAll()
-
+                        .requestMatchers("/admin/**").hasRole("ADMINISTRATOR")
+                        .requestMatchers("/attendant/**").hasRole("ATTENDANT")
+                        .requestMatchers("/patient/**").hasRole("PATIENT")
                         .anyRequest().authenticated()
-                );
+                )
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint((req, res, ex) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType("application/json");
+                            res.getWriter().write("{\"status\":401,\"error\":\"Unauthorized\",\"message\":\"Authentication required\"}");
+                        })
+                        .accessDeniedHandler((req, res, ex) -> {
+                            res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            res.setContentType("application/json");
+                            res.getWriter().write("{\"status\":403,\"error\":\"Forbidden\",\"message\":\"Access denied\"}");
+                        })
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    private void write401(HttpServletRequest req, HttpServletResponse res, Exception e) throws IOException {
-        var body = ApiError.of(
-                HttpStatus.UNAUTHORIZED.value(),
-                "Unauthorized",
-                (e != null && e.getMessage() != null) ? "Credenciales inválidas" : "No autenticado",
-                req.getRequestURI()
-        );
-        writeJson(res, HttpStatus.UNAUTHORIZED.value(), body);
-    }
-
-    private void write403(HttpServletRequest req, HttpServletResponse res,
-                          org.springframework.security.access.AccessDeniedException e) throws IOException {
-        var body = ApiError.of(
-                HttpStatus.FORBIDDEN.value(),
-                "Forbidden",
-                "No tienes permisos para esta operación",
-                req.getRequestURI()
-        );
-        writeJson(res, HttpStatus.FORBIDDEN.value(), body);
-    }
-
-    private void writeJson(HttpServletResponse res, int status, Object body) throws IOException {
-        res.setStatus(status);
-        res.setContentType("application/json;charset=UTF-8");
-        mapper.writeValue(res.getWriter(), body);
     }
 }
