@@ -30,6 +30,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/auth/login",
+                                "/auth/register",
+                                "/auth/roles", //temporal
                                 "/auth/refresh",
                                 "/api-docs/**",
                                 "/swagger-ui.html",

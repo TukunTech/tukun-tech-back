@@ -1,18 +1,20 @@
 package com.upc.tukuntech.backend.modules.auth.service;
 
-import com.upc.tukuntech.backend.modules.auth.dto.LoginRequest;
-import com.upc.tukuntech.backend.modules.auth.dto.LoginResponse;
-import com.upc.tukuntech.backend.modules.auth.dto.UserSummary;
+import com.upc.tukuntech.backend.modules.auth.dto.*;
+import com.upc.tukuntech.backend.modules.auth.entity.RoleEntity;
 import com.upc.tukuntech.backend.modules.auth.entity.UserEntity;
+import com.upc.tukuntech.backend.modules.auth.repository.RoleRepository;
 import com.upc.tukuntech.backend.modules.auth.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,14 +23,26 @@ public class AuthApplicationService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final SessionService sessionService;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
-    public AuthApplicationService(AuthenticationManager authenticationManager, JwtService jwtService, UserRepository userRepository, SessionService sessionService) {
+    public AuthApplicationService(
+            AuthenticationManager authenticationManager,
+            JwtService jwtService,
+            UserRepository userRepository,
+            SessionService sessionService,
+            PasswordEncoder passwordEncoder,
+            RoleRepository roleRepository
+    ) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.sessionService = sessionService;
+        this.passwordEncoder = passwordEncoder;
+        this.roleRepository = roleRepository;
     }
 
+    // ---------------- LOGIN ----------------
     public LoginResponse login(LoginRequest request, String clientIp, String userAgent) {
         try {
             authenticationManager.authenticate(
@@ -53,5 +67,43 @@ public class AuthApplicationService {
         return new LoginResponse(accessToken, "Bearer", accessTtl, refreshToken, summary);
     }
 
+    public RegisterResponse register(RegisterRequest request) {
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
+        }
 
+        // Normalizar role a mayúsculas
+        String inputRole = request.role().toUpperCase();
+
+        String normalizedRole = switch (inputRole) {
+            case "PATIENT" -> "PATIENT";
+            case "ATTENDANT" -> "ATTENDANT";
+            case "ADMINISTRATOR" -> "ADMIN";
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid role");
+        };
+
+        UserEntity user = new UserEntity();
+        user.setEmail(request.email());
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        user.setDni(request.dni());
+
+        // asignar rol
+        RoleEntity role = roleRepository.findByName(normalizedRole)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role not found"));
+        user.getRoles().add(role);
+
+        UserEntity saved = userRepository.save(user);
+
+        return new RegisterResponse(saved.getId(), saved.getEmail(), "User registered successfully");
+    }
+
+    //TEMPORAL
+    public List<String> getAllRoles() {
+        return roleRepository.findAll()
+                .stream()
+                .map(RoleEntity::getName)
+                .toList();
+    }
 }
