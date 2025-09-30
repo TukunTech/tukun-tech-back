@@ -1,6 +1,7 @@
 package com.upc.tukuntech.backend.modules.auth.application.service;
 
 import com.upc.tukuntech.backend.modules.auth.application.dto.*;
+import com.upc.tukuntech.backend.modules.auth.application.mapper.UserMapper;
 import com.upc.tukuntech.backend.modules.auth.domain.entity.RoleEntity;
 import com.upc.tukuntech.backend.modules.auth.domain.entity.UserEntity;
 import com.upc.tukuntech.backend.modules.auth.domain.repository.RoleRepository;
@@ -84,12 +85,8 @@ public class AuthApplicationService {
             default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid role");
         };
 
-        UserEntity user = new UserEntity();
-        user.setEmail(request.email());
+        UserEntity user = UserMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
-        user.setFirstName(request.firstName());
-        user.setLastName(request.lastName());
-        user.setDni(request.dni());
 
         // asignar rol
         RoleEntity role = roleRepository.findByName(normalizedRole)

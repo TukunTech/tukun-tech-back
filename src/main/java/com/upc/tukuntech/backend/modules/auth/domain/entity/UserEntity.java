@@ -1,5 +1,9 @@
 package com.upc.tukuntech.backend.modules.auth.domain.entity;
 
+import com.upc.tukuntech.backend.modules.auth.domain.model.Allergy;
+import com.upc.tukuntech.backend.modules.auth.domain.model.BloodGroup;
+import com.upc.tukuntech.backend.modules.auth.domain.model.Gender;
+import com.upc.tukuntech.backend.modules.auth.domain.model.Nationality;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +39,25 @@ public class UserEntity {
 
     @Column(nullable = false, length = 120)
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 10)
+    private Gender gender = Gender.OTHER;
+
+    @Column(nullable = false)
+    private Integer age;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private BloodGroup bloodGroup;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Nationality nationality;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 30)
+    private Allergy allergy;
 
     @Column(nullable = false)
     private Boolean enabled = true;
