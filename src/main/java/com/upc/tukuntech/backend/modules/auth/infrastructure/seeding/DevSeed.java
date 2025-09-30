@@ -1,11 +1,11 @@
-package com.upc.tukuntech.backend.modules.auth.service;
+package com.upc.tukuntech.backend.modules.auth.infrastructure.seeding;
 
-import com.upc.tukuntech.backend.modules.auth.entity.PermissionEntity;
-import com.upc.tukuntech.backend.modules.auth.entity.RoleEntity;
-import com.upc.tukuntech.backend.modules.auth.entity.UserEntity;
-import com.upc.tukuntech.backend.modules.auth.repository.PermissionRepository;
-import com.upc.tukuntech.backend.modules.auth.repository.RoleRepository;
-import com.upc.tukuntech.backend.modules.auth.repository.UserRepository;
+import com.upc.tukuntech.backend.modules.auth.domain.entity.PermissionEntity;
+import com.upc.tukuntech.backend.modules.auth.domain.entity.RoleEntity;
+import com.upc.tukuntech.backend.modules.auth.domain.entity.UserEntity;
+import com.upc.tukuntech.backend.modules.auth.domain.repository.PermissionRepository;
+import com.upc.tukuntech.backend.modules.auth.domain.repository.RoleRepository;
+import com.upc.tukuntech.backend.modules.auth.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

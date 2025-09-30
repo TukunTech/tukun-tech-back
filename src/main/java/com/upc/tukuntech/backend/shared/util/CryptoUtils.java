@@ -1,4 +1,4 @@
-package com.upc.tukuntech.backend.modules.auth.util;
+package com.upc.tukuntech.backend.shared.util;
 
 import java.security.MessageDigest;
 import java.security.SecureRandom;

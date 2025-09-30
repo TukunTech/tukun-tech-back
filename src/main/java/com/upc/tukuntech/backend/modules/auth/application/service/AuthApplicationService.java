@@ -1,10 +1,12 @@
-package com.upc.tukuntech.backend.modules.auth.service;
+package com.upc.tukuntech.backend.modules.auth.application.service;
 
-import com.upc.tukuntech.backend.modules.auth.dto.*;
-import com.upc.tukuntech.backend.modules.auth.entity.RoleEntity;
-import com.upc.tukuntech.backend.modules.auth.entity.UserEntity;
-import com.upc.tukuntech.backend.modules.auth.repository.RoleRepository;
-import com.upc.tukuntech.backend.modules.auth.repository.UserRepository;
+import com.upc.tukuntech.backend.modules.auth.application.dto.*;
+import com.upc.tukuntech.backend.modules.auth.domain.entity.RoleEntity;
+import com.upc.tukuntech.backend.modules.auth.domain.entity.UserEntity;
+import com.upc.tukuntech.backend.modules.auth.domain.repository.RoleRepository;
+import com.upc.tukuntech.backend.modules.auth.domain.repository.UserRepository;
+import com.upc.tukuntech.backend.modules.auth.infrastructure.security.JwtService;
+import com.upc.tukuntech.backend.modules.auth.domain.service.SessionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;

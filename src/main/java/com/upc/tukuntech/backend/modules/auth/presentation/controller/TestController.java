@@ -1,4 +1,4 @@
-package com.upc.tukuntech.backend.modules.auth.controller;
+package com.upc.tukuntech.backend.modules.auth.presentation.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;

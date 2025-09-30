@@ -1,6 +1,6 @@
-package com.upc.tukuntech.backend.modules.auth.repository;
+package com.upc.tukuntech.backend.modules.auth.domain.repository;
 
-import com.upc.tukuntech.backend.modules.auth.entity.RoleEntity;
+import com.upc.tukuntech.backend.modules.auth.domain.entity.RoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

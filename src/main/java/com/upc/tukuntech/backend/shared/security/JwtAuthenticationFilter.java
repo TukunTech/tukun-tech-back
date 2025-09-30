@@ -1,6 +1,6 @@
 package com.upc.tukuntech.backend.shared.security;
 
-import com.upc.tukuntech.backend.modules.auth.service.JwtService;
+import com.upc.tukuntech.backend.modules.auth.infrastructure.security.JwtService;
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

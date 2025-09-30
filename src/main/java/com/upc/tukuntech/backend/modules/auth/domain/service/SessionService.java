@@ -1,10 +1,10 @@
-package com.upc.tukuntech.backend.modules.auth.service;
+package com.upc.tukuntech.backend.modules.auth.domain.service;
 
 import com.upc.tukuntech.backend.config.JwtProperties;
-import com.upc.tukuntech.backend.modules.auth.entity.SessionEntity;
-import com.upc.tukuntech.backend.modules.auth.entity.UserEntity;
-import com.upc.tukuntech.backend.modules.auth.repository.SessionRepository;
-import com.upc.tukuntech.backend.modules.auth.util.CryptoUtils;
+import com.upc.tukuntech.backend.modules.auth.domain.entity.SessionEntity;
+import com.upc.tukuntech.backend.modules.auth.domain.entity.UserEntity;
+import com.upc.tukuntech.backend.modules.auth.domain.repository.SessionRepository;
+import com.upc.tukuntech.backend.shared.util.CryptoUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

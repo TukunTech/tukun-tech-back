@@ -1,7 +1,7 @@
-package com.upc.tukuntech.backend.modules.auth.service;
+package com.upc.tukuntech.backend.modules.auth.infrastructure.security;
 
-import com.upc.tukuntech.backend.modules.auth.entity.UserEntity;
-import com.upc.tukuntech.backend.modules.auth.repository.UserRepository;
+import com.upc.tukuntech.backend.modules.auth.domain.entity.UserEntity;
+import com.upc.tukuntech.backend.modules.auth.domain.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

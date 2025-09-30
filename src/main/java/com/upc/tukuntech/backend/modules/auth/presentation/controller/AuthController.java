@@ -1,7 +1,10 @@
-package com.upc.tukuntech.backend.modules.auth.controller;
+package com.upc.tukuntech.backend.modules.auth.presentation.controller;
 
-import com.upc.tukuntech.backend.modules.auth.dto.*;
-import com.upc.tukuntech.backend.modules.auth.service.AuthApplicationService;
+import com.upc.tukuntech.backend.modules.auth.application.dto.LoginRequest;
+import com.upc.tukuntech.backend.modules.auth.application.dto.LoginResponse;
+import com.upc.tukuntech.backend.modules.auth.application.dto.RegisterRequest;
+import com.upc.tukuntech.backend.modules.auth.application.dto.RegisterResponse;
+import com.upc.tukuntech.backend.modules.auth.application.service.AuthApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;

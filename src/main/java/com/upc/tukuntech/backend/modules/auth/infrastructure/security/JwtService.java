@@ -1,7 +1,7 @@
-package com.upc.tukuntech.backend.modules.auth.service;
+package com.upc.tukuntech.backend.modules.auth.infrastructure.security;
 
 import com.upc.tukuntech.backend.config.JwtProperties;
-import com.upc.tukuntech.backend.modules.auth.entity.UserEntity;
+import com.upc.tukuntech.backend.modules.auth.domain.entity.UserEntity;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;

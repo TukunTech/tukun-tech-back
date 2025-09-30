@@ -1,4 +1,4 @@
-package com.upc.tukuntech.backend.modules.auth.entity;
+package com.upc.tukuntech.backend.modules.auth.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.upc.tukuntech.backend.modules.auth.dto;
+package com.upc.tukuntech.backend.modules.auth.application.dto;
 
 public record RegisterResponse(
         Long id,

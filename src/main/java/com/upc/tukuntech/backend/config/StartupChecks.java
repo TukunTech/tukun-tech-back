@@ -1,6 +1,6 @@
 package com.upc.tukuntech.backend.config;
 
-import com.upc.tukuntech.backend.modules.auth.repository.RoleRepository;
+import com.upc.tukuntech.backend.modules.auth.domain.repository.RoleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
