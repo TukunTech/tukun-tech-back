@@ -15,7 +15,7 @@ public class SessionEntity {
     @Column(columnDefinition = "BINARY(16)")
     private UUID id = UUID.randomUUID();
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sessions_user"))
     private UserEntity user;
 

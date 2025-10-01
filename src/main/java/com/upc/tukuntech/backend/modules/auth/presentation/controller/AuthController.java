@@ -118,7 +118,36 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    // ---------------- REFRESH TOKEN ----------------
+    @PostMapping("/refresh")
+    @Operation(
+            summary = "Refresh access token",
+            description = "Generate a new access token using a valid refresh token.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "New access token generated"),
+                    @ApiResponse(responseCode = "401", description = "Invalid or expired refresh token")
+            }
+    )
+    public ResponseEntity<TokenRefreshResponse> refreshAccessToken(@RequestBody RefreshRequest request,
+                                                                   HttpServletRequest http) {
+        String ip = clientIp(http);
+        String ua = http.getHeader("User-Agent");
+        return ResponseEntity.ok(authApp.refreshAccessToken(request.refreshToken(), ip, ua));
+    }
 
-
+    // ---------------- LOGOUT ----------------
+    @PostMapping("/logout")
+    @Operation(
+            summary = "Logout user",
+            description = "Revoke the provided refresh token (invalidate session).",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Logout successful"),
+                    @ApiResponse(responseCode = "401", description = "Invalid or expired refresh token")
+            }
+    )
+    public ResponseEntity<Void> logout(@RequestBody RefreshRequest request) {
+        authApp.logout(request.refreshToken());
+        return ResponseEntity.ok().build();
+    }
 
 }

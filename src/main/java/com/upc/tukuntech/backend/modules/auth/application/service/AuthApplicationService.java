@@ -128,9 +128,40 @@ public class AuthApplicationService {
         );
     }
 
+    // ---------------- REFRESH ----------------
+    public TokenRefreshResponse refreshAccessToken(String refreshToken, String clientIp, String userAgent) {
+        var session = sessionService.validateRefreshToken(refreshToken)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token"));
 
+        // Validar expiración del refresh token
+        if (session.getRefreshExpiresAt().isBefore(Instant.now())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token expired");
+        }
 
+        UserEntity user = session.getUser();
 
+        // Generar nuevo access token
+        String newAccessToken = jwtService.generateAccessToken(user);
+        long accessTtl = jwtService.getAccessTtlSeconds();
+        Instant newAccessExpAt = Instant.now().plusSeconds(accessTtl);
 
+        // Actualizar expiración en la sesión
+        sessionService.updateAccessExpiry(session, newAccessExpAt);
+
+        return new TokenRefreshResponse(
+                newAccessToken,
+                "Bearer",
+                accessTtl,
+                refreshToken // reusamos el mismo refresh mientras siga activo
+        );
+    }
+
+    // ---------------- LOGOUT ----------------
+    public void logout(String refreshToken) {
+        boolean revoked = sessionService.revokeRefreshToken(refreshToken);
+        if (!revoked) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid or expired refresh token");
+        }
+    }
 
 }

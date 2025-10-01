@@ -34,6 +34,7 @@ public class SecurityConfig {
                                 "/auth/roles", //temporal
                                 "/auth/me",
                                 "/auth/refresh",
+                                "/auth/logout",
                                 "/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",

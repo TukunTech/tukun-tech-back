@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,8 +23,9 @@ public class SessionService {
         this.jwtProperties = jwtProperties;
     }
 
+    // ✅ Registrar nueva sesión y devolver refresh token en claro
     @Transactional
-    public String registerLogin(UserEntity user, String ip, String userAgent, Instant accessExpAt){
+    public String registerLogin(UserEntity user, String ip, String userAgent, Instant accessExpAt) {
         List<SessionEntity> active = sessionRepository.findByUserAndActiveTrue(user);
         int max = jwtProperties.getMaximumSessions();
         if (active.size() >= max) {
@@ -33,8 +35,8 @@ public class SessionService {
             sessionRepository.save(oldest);
         }
 
-        String refreshToken = CryptoUtils.randomToken(32);
-        String refreshHash = CryptoUtils.sha256Hex(refreshToken);
+        String refreshToken = CryptoUtils.randomToken(32); // token en claro
+        String refreshHash = CryptoUtils.sha256Hex(refreshToken); // lo que guardamos en BD
         Instant now = Instant.now();
         Instant refreshExpAt = now.plus(jwtProperties.getRefreshTokenExpiration());
 
@@ -52,13 +54,30 @@ public class SessionService {
 
         sessionRepository.save(s);
         return refreshToken;
-
-
     }
 
+    // Validar un refresh token activo
+    public Optional<SessionEntity> validateRefreshToken(String refreshToken) {
+        String hash = CryptoUtils.sha256Hex(refreshToken);
+        return sessionRepository.findByRefreshTokenHashAndActiveTrue(hash);
+    }
+
+    // Revocar un refresh token
+    public boolean revokeRefreshToken(String refreshToken) {
+        String hash = CryptoUtils.sha256Hex(refreshToken);
+        return sessionRepository.findByRefreshTokenHashAndActiveTrue(hash)
+                .map(session -> {
+                    session.setActive(false);
+                    session.setRevokedAt(Instant.now());
+                    sessionRepository.save(session);
+                    return true;
+                })
+                .orElse(false);
+    }
+
+    // Actualizar fecha de expiración del access token
     public void updateAccessExpiry(SessionEntity session, Instant newExpiry) {
         session.setAccessExpiresAt(newExpiry);
         sessionRepository.save(session);
     }
-
 }
