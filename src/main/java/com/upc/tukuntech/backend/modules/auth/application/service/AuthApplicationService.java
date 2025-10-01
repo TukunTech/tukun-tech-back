@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -105,4 +107,30 @@ public class AuthApplicationService {
                 .map(RoleEntity::getName)
                 .toList();
     }
+
+    public UserProfileResponse getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        return new UserProfileResponse(
+                user.getId().toString(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getDni(),
+                user.getAge(),
+                user.getGender().name(),
+                user.getBloodGroup().name(),
+                user.getNationality().name(),
+                user.getAllergy().name()
+        );
+    }
+
+
+
+
+
+
 }

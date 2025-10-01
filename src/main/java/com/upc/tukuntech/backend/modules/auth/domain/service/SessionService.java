@@ -55,4 +55,10 @@ public class SessionService {
 
 
     }
+
+    public void updateAccessExpiry(SessionEntity session, Instant newExpiry) {
+        session.setAccessExpiresAt(newExpiry);
+        sessionRepository.save(session);
+    }
+
 }
