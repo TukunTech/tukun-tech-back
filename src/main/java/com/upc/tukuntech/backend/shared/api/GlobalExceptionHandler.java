@@ -66,6 +66,29 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
+    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+    public ResponseEntity<ApiError> handleResponseStatusException(
+            org.springframework.web.server.ResponseStatusException ex,
+            HttpServletRequest req) {
+
+        int status = ex.getStatusCode().value();
+        String reason = ex.getReason() != null ? ex.getReason() : ex.getMessage();
+
+        String reasonPhrase = org.springframework.http.HttpStatus.resolve(status) != null
+                ? org.springframework.http.HttpStatus.resolve(status).getReasonPhrase()
+                : "Error";
+
+        var body = ApiError.of(
+                status,
+                reasonPhrase,
+                reason,
+                req.getRequestURI()
+        );
+
+        return ResponseEntity.status(ex.getStatusCode()).body(body);
+    }
+
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleAny(Exception ex, HttpServletRequest req) {
         var body = ApiError.of(
