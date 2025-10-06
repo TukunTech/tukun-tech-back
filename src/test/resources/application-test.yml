@@ -1,0 +1,42 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+server:
+  servlet:
+    context-path: /api/v1
+
+app:
+  security:
+    jwt:
+      issuer: tukun-tech-test
+      secret: "c3VwZXItc2VjcmV0LXN1cGVyLXNlY3JldC1zdXBlci1zZWNyZXQtc3VwZXItc2VjcmV0LTMyaWJzIQ=="
+      access-token-expiration-seconds: 900
+      refresh-token-expiration-seconds: 2592000
+      maximum-sessions: 3
+  cors:
+    allowed-origins:
+      - "http://localhost:4200"
+    allowed-methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+    allowed-headers:
+      - "*"
+    exposed-headers:
+      - Authorization
+      - Location
+    allow-credentials: true
+    max-age: 3600
+
+
