@@ -1,4 +1,4 @@
-package com.upc.tukuntech.backend.modules.auth.domain.entity;
+package com.upc.tukuntech.backend.modules.iam.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,7 +17,7 @@ public class SessionEntity {
 
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false, foreignKey = @ForeignKey(name = "fk_sessions_user"))
-    private UserEntity user;
+    private UserIdentity user;
 
     @Column(name = "refresh_token_hash", nullable = false, length = 64)
     private String refreshTokenHash;

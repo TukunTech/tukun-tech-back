@@ -1,9 +1,9 @@
-package com.upc.tukuntech.backend.modules.auth.domain.service;
+package com.upc.tukuntech.backend.modules.iam.domain.service;
 
-import com.upc.tukuntech.backend.config.JwtProperties;
-import com.upc.tukuntech.backend.modules.auth.domain.entity.SessionEntity;
-import com.upc.tukuntech.backend.modules.auth.domain.entity.UserEntity;
-import com.upc.tukuntech.backend.modules.auth.domain.repository.SessionRepository;
+import com.upc.tukuntech.backend.modules.iam.config.JwtProperties;
+import com.upc.tukuntech.backend.modules.iam.domain.entity.SessionEntity;
+import com.upc.tukuntech.backend.modules.iam.domain.entity.UserIdentity;
+import com.upc.tukuntech.backend.modules.iam.domain.repositories.SessionRepository;
 import com.upc.tukuntech.backend.shared.util.CryptoUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +25,7 @@ public class SessionService {
 
     // ✅ Registrar nueva sesión y devolver refresh token en claro
     @Transactional
-    public String registerLogin(UserEntity user, String ip, String userAgent, Instant accessExpAt) {
+    public String registerLogin(UserIdentity user, String ip, String userAgent, Instant accessExpAt) {
         List<SessionEntity> active = sessionRepository.findByUserAndActiveTrue(user);
         int max = jwtProperties.getMaximumSessions();
         if (active.size() >= max) {
