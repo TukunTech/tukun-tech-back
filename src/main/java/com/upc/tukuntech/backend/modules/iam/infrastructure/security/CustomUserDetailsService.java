@@ -1,7 +1,7 @@
-package com.upc.tukuntech.backend.modules.auth.infrastructure.security;
+package com.upc.tukuntech.backend.modules.iam.infrastructure.security;
 
-import com.upc.tukuntech.backend.modules.auth.domain.entity.UserEntity;
-import com.upc.tukuntech.backend.modules.auth.domain.repository.UserRepository;
+import com.upc.tukuntech.backend.modules.iam.domain.entity.UserIdentity;
+import com.upc.tukuntech.backend.modules.iam.domain.repositories.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
-        UserEntity u = userRepository.findByEmail(username)
+        UserIdentity u = userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         Set<GrantedAuthority> authorities = new HashSet<>();
