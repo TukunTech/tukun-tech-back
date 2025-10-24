@@ -1,4 +1,4 @@
-package com.upc.tukuntech.backend.config;
+package com.upc.tukuntech.backend.modules.iam.config;
 
 import lombok.Getter;
 import lombok.Setter;

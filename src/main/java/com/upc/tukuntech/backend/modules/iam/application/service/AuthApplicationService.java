@@ -1,13 +1,18 @@
-package com.upc.tukuntech.backend.modules.auth.application.service;
+package com.upc.tukuntech.backend.modules.iam.application.service;
 
-import com.upc.tukuntech.backend.modules.auth.application.dto.*;
-import com.upc.tukuntech.backend.modules.auth.application.mapper.UserMapper;
-import com.upc.tukuntech.backend.modules.auth.domain.entity.RoleEntity;
-import com.upc.tukuntech.backend.modules.auth.domain.entity.UserEntity;
-import com.upc.tukuntech.backend.modules.auth.domain.repository.RoleRepository;
-import com.upc.tukuntech.backend.modules.auth.domain.repository.UserRepository;
-import com.upc.tukuntech.backend.modules.auth.infrastructure.security.JwtService;
-import com.upc.tukuntech.backend.modules.auth.domain.service.SessionService;
+import com.upc.tukuntech.backend.modules.iam.application.dto.LoginRequest;
+import com.upc.tukuntech.backend.modules.iam.application.dto.LoginResponse;
+import com.upc.tukuntech.backend.modules.iam.application.dto.TokenRefreshResponse;
+import com.upc.tukuntech.backend.modules.iam.application.dto.RegisterRequest;
+import com.upc.tukuntech.backend.modules.iam.application.dto.RegisterResponse;
+import com.upc.tukuntech.backend.modules.iam.application.dto.UserSummary;
+import com.upc.tukuntech.backend.modules.iam.application.mapper.UserMapper;
+import com.upc.tukuntech.backend.modules.iam.domain.entity.RoleEntity;
+import com.upc.tukuntech.backend.modules.iam.domain.entity.UserIdentity;
+import com.upc.tukuntech.backend.modules.iam.domain.repositories.RoleRepository;
+import com.upc.tukuntech.backend.modules.iam.domain.repositories.UserRepository;
+import com.upc.tukuntech.backend.modules.iam.domain.service.SessionService;
+import com.upc.tukuntech.backend.modules.iam.infrastructure.security.JwtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -57,27 +62,27 @@ public class AuthApplicationService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
         }
 
-        UserEntity user = userRepository.findByEmail(request.email())
+        UserIdentity user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
 
         String accessToken = jwtService.generateAccessToken(user);
-        long accessTtl     = jwtService.getAccessTtlSeconds();
+        long accessTtl = jwtService.getAccessTtlSeconds();
         Instant accessExpAt = Instant.now().plusSeconds(accessTtl);
 
         String refreshToken = sessionService.registerLogin(user, clientIp, userAgent, accessExpAt);
 
-        var roles = user.getRoles().stream().map(r -> r.getName()).collect(Collectors.toSet());
+        var roles = user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet());
         UserSummary summary = new UserSummary(user.getId(), user.getEmail(), roles);
 
         return new LoginResponse(accessToken, "Bearer", accessTtl, refreshToken, summary);
     }
 
+    // ---------------- REGISTER ----------------
     public RegisterResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.email()).isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
         }
 
-        // Normalizar role a mayúsculas
         String inputRole = request.role().toUpperCase();
 
         String normalizedRole = switch (inputRole) {
@@ -87,45 +92,17 @@ public class AuthApplicationService {
             default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid role");
         };
 
-        UserEntity user = UserMapper.toEntity(request);
+        UserIdentity user = UserMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.password()));
 
-        // asignar rol
         RoleEntity role = roleRepository.findByName(normalizedRole)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Role not found"));
+
         user.getRoles().add(role);
+        UserIdentity saved = userRepository.save(user);
 
-        UserEntity saved = userRepository.save(user);
-
+        // Aquí solo se crea el usuario base, el perfil lo crea Profiles
         return new RegisterResponse(saved.getId(), saved.getEmail(), "User registered successfully");
-    }
-
-    //TEMPORAL
-    public List<String> getAllRoles() {
-        return roleRepository.findAll()
-                .stream()
-                .map(RoleEntity::getName)
-                .toList();
-    }
-
-    public UserProfileResponse getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-
-        UserEntity user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        return new UserProfileResponse(
-                user.getId().toString(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getDni(),
-                user.getAge(),
-                user.getGender().name(),
-                user.getBloodGroup().name(),
-                user.getNationality().name(),
-                user.getAllergy().name()
-        );
     }
 
     // ---------------- REFRESH ----------------
@@ -133,27 +110,19 @@ public class AuthApplicationService {
         var session = sessionService.validateRefreshToken(refreshToken)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token"));
 
-        // Validar expiración del refresh token
         if (session.getRefreshExpiresAt().isBefore(Instant.now())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token expired");
         }
 
-        UserEntity user = session.getUser();
+        UserIdentity user = session.getUser();
 
-        // Generar nuevo access token
         String newAccessToken = jwtService.generateAccessToken(user);
         long accessTtl = jwtService.getAccessTtlSeconds();
         Instant newAccessExpAt = Instant.now().plusSeconds(accessTtl);
 
-        // Actualizar expiración en la sesión
         sessionService.updateAccessExpiry(session, newAccessExpAt);
 
-        return new TokenRefreshResponse(
-                newAccessToken,
-                "Bearer",
-                accessTtl,
-                refreshToken // reusamos el mismo refresh mientras siga activo
-        );
+        return new TokenRefreshResponse(newAccessToken, "Bearer", accessTtl, refreshToken);
     }
 
     // ---------------- LOGOUT ----------------
@@ -164,4 +133,22 @@ public class AuthApplicationService {
         }
     }
 
+    // ---------------- UTILS ----------------
+    public List<String> getAllRoles() {
+        return roleRepository.findAll()
+                .stream()
+                .map(RoleEntity::getName)
+                .toList();
+    }
+
+    public UserSummary getAuthenticatedIdentity() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        UserIdentity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        var roles = user.getRoles().stream().map(RoleEntity::getName).collect(Collectors.toSet());
+        return new UserSummary(user.getId(), user.getEmail(), roles);
+    }
 }

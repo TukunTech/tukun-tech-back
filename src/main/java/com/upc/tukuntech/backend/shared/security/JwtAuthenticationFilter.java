@@ -1,6 +1,6 @@
 package com.upc.tukuntech.backend.shared.security;
 
-import com.upc.tukuntech.backend.modules.auth.infrastructure.security.JwtService;
+import com.upc.tukuntech.backend.modules.iam.infrastructure.security.JwtService;
 import io.jsonwebtoken.*;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,15 +30,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        String uri = request.getRequestURI();
-        String ctx = request.getContextPath();
-        String path = uri.substring(ctx.length());
+        String path = request.getRequestURI();
 
-        return path.startsWith("/api-docs")
+        // Endpoints públicos (sin autenticación requerida)
+        return path.startsWith("/auth")
+                || path.startsWith("/api-docs")
                 || path.startsWith("/v3/api-docs")
                 || path.startsWith("/swagger-ui")
+                || path.startsWith("/swagger-resources")
                 || path.startsWith("/actuator")
-                || path.startsWith("/auth");
+                || path.startsWith("/error")
+                || path.startsWith("/favicon.ico");
     }
 
     @Override

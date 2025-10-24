@@ -1,7 +1,7 @@
-package com.upc.tukuntech.backend.modules.auth.infrastructure.security;
+package com.upc.tukuntech.backend.modules.iam.infrastructure.security;
 
-import com.upc.tukuntech.backend.config.JwtProperties;
-import com.upc.tukuntech.backend.modules.auth.domain.entity.UserEntity;
+import com.upc.tukuntech.backend.modules.iam.config.JwtProperties;
+import com.upc.tukuntech.backend.modules.iam.domain.entity.UserIdentity;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -26,7 +26,7 @@ public class JwtService {
         this.signingKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generateAccessToken(UserEntity user) {
+    public String generateAccessToken(UserIdentity user) {
         Instant now = Instant.now();
         Instant expiry = now.plus(props.getAccessTokenExpiration());
 
