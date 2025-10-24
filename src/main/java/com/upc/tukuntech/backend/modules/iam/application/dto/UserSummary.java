@@ -1,4 +1,4 @@
-package com.upc.tukuntech.backend.modules.auth.application.dto;
+package com.upc.tukuntech.backend.modules.iam.application.dto;
 
 import java.util.Set;
 
