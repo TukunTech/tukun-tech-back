@@ -1,4 +1,4 @@
-package com.upc.tukuntech.backend.config;
+package com.upc.tukuntech.backend.modules.iam.config;
 
 import com.upc.tukuntech.backend.shared.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,12 +29,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/auth/login",
-                                "/auth/register",
-                                "/auth/roles", //temporal
-                                "/auth/me",
-                                "/auth/refresh",
-                                "/auth/logout",
+                                "/auth/**",
                                 "/api-docs/**",
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",

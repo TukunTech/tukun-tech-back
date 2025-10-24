@@ -1,4 +1,4 @@
-package com.upc.tukuntech.backend.config;
+package com.upc.tukuntech.backend.shared.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;

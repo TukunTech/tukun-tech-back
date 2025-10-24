@@ -1,4 +1,4 @@
-package com.upc.tukuntech.backend.config;
+package com.upc.tukuntech.backend.shared.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
