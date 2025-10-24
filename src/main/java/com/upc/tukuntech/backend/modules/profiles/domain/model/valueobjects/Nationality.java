@@ -1,4 +1,4 @@
-package com.upc.tukuntech.backend.modules.auth.domain.model;
+package com.upc.tukuntech.backend.modules.profiles.domain.model.valueobjects;
 
 public enum Nationality {
     PERUVIAN,
