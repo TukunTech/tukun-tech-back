@@ -1,9 +1,6 @@
 package com.upc.tukuntech.backend.modules.profiles.domain.entity;
 
-import com.upc.tukuntech.backend.modules.profiles.domain.model.valueobjects.Allergy;
-import com.upc.tukuntech.backend.modules.profiles.domain.model.valueobjects.BloodGroup;
-import com.upc.tukuntech.backend.modules.profiles.domain.model.valueobjects.Gender;
-import com.upc.tukuntech.backend.modules.profiles.domain.model.valueobjects.Nationality;
+import com.upc.tukuntech.backend.modules.profiles.domain.model.valueobjects.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,11 +8,12 @@ import lombok.Setter;
 @Entity
 @Table(name = "user_profiles",
         indexes = {
-                @Index(name = "profiles_dni", columnList = "dni", unique = true)
+                @Index(name = "profiles_dni", columnList = "dni", unique = true),
+                @Index(name = "profiles_user", columnList = "userId", unique = true)
         })
-@Getter
-@Setter
+@Getter @Setter
 public class UserProfile {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,13 +21,13 @@ public class UserProfile {
     @Column(nullable = false)
     private Long userId; // referencia al IAM.UserIdentity.id
 
-    @Column(length = 80)
+    @Column(length = 80, nullable = false)
     private String firstName;
 
-    @Column(length = 80)
+    @Column(length = 80, nullable = false)
     private String lastName;
 
-    @Column(length = 20, unique = true)
+    @Column(length = 20, unique = true, nullable = false)
     private String dni;
 
     private Integer age;
@@ -45,4 +43,8 @@ public class UserProfile {
 
     @Enumerated(EnumType.STRING)
     private Allergy allergy;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private ProfileType profileType; // 🔹 Nuevo campo
 }
