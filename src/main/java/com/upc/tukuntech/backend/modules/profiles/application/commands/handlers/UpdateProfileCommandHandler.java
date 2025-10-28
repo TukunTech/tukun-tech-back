@@ -1,14 +1,12 @@
 package com.upc.tukuntech.backend.modules.profiles.application.commands.handlers;
 
-import com.upc.tukuntech.backend.modules.iam.application.dto.UserProfileResponse;
+import com.upc.tukuntech.backend.modules.profiles.application.dto.UserProfileResponse;
 import com.upc.tukuntech.backend.modules.iam.domain.repositories.UserRepository;
 import com.upc.tukuntech.backend.modules.profiles.application.commands.UpdateProfileCommand;
 import com.upc.tukuntech.backend.modules.profiles.application.mapper.ProfileMapper;
-import com.upc.tukuntech.backend.modules.profiles.domain.entity.UserProfile;
 import com.upc.tukuntech.backend.modules.profiles.domain.model.valueobjects.ProfileType;
 import com.upc.tukuntech.backend.modules.profiles.domain.repositories.UserProfileRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
