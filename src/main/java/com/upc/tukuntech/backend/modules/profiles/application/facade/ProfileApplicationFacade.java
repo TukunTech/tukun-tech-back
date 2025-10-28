@@ -1,6 +1,6 @@
 package com.upc.tukuntech.backend.modules.profiles.application.facade;
 
-import com.upc.tukuntech.backend.modules.iam.application.dto.UserProfileResponse;
+import com.upc.tukuntech.backend.modules.profiles.application.dto.UserProfileResponse;
 import com.upc.tukuntech.backend.modules.iam.domain.repositories.UserRepository;
 import com.upc.tukuntech.backend.modules.profiles.application.commands.CreateProfileCommand;
 import com.upc.tukuntech.backend.modules.profiles.application.commands.DeleteProfileByDniCommand;

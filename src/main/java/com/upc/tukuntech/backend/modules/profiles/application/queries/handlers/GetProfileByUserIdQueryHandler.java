@@ -1,6 +1,6 @@
 package com.upc.tukuntech.backend.modules.profiles.application.queries.handlers;
 
-import com.upc.tukuntech.backend.modules.iam.application.dto.UserProfileResponse;
+import com.upc.tukuntech.backend.modules.profiles.application.dto.UserProfileResponse;
 import com.upc.tukuntech.backend.modules.profiles.application.mapper.ProfileMapper;
 import com.upc.tukuntech.backend.modules.profiles.domain.repositories.UserProfileRepository;
 import org.springframework.http.HttpStatus;

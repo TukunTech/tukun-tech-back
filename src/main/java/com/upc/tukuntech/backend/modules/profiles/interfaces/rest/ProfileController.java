@@ -1,6 +1,6 @@
 package com.upc.tukuntech.backend.modules.profiles.interfaces.rest;
 
-import com.upc.tukuntech.backend.modules.iam.application.dto.UserProfileResponse;
+import com.upc.tukuntech.backend.modules.profiles.application.dto.UserProfileResponse;
 import com.upc.tukuntech.backend.modules.iam.application.service.AuthApplicationService;
 import com.upc.tukuntech.backend.modules.profiles.application.dto.CreateProfileRequest;
 import com.upc.tukuntech.backend.modules.profiles.application.facade.ProfileApplicationFacade;

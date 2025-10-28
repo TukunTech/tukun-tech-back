@@ -1,6 +1,6 @@
 package com.upc.tukuntech.backend.modules.profiles.application.queries.handlers;
 
-import com.upc.tukuntech.backend.modules.iam.application.dto.UserProfileResponse;
+import com.upc.tukuntech.backend.modules.profiles.application.dto.UserProfileResponse;
 import com.upc.tukuntech.backend.modules.profiles.domain.repositories.UserProfileRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,8 @@ public class GetProfileByIdQueryHandler {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Profile not found"));
 
         return new UserProfileResponse(
-                profile.getId().toString(),
+                profile.getId(),
+                profile.getUserId(),
                 profile.getFirstName(),
                 profile.getLastName(),
                 profile.getDni(),
@@ -28,7 +29,8 @@ public class GetProfileByIdQueryHandler {
                 profile.getGender() != null ? profile.getGender().name() : null,
                 profile.getBloodGroup() != null ? profile.getBloodGroup().name() : null,
                 profile.getNationality() != null ? profile.getNationality().name() : null,
-                profile.getAllergy() != null ? profile.getAllergy().name() : null
+                profile.getAllergy() != null ? profile.getAllergy().name() : null,
+                profile.getProfileType()
         );
     }
 }
