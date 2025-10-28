@@ -1,6 +1,5 @@
 package com.upc.tukuntech.backend.modules.monitoring.application.service;
 
-import com.upc.tukuntech.backend.modules.monitoring.application.commands.CreateVitalSignCommand;
 import com.upc.tukuntech.backend.modules.monitoring.application.commands.handlers.CreateVitalSignCommandHandler;
 import com.upc.tukuntech.backend.modules.monitoring.application.dto.CreateVitalSignRequest;
 import com.upc.tukuntech.backend.modules.monitoring.application.dto.VitalSignResponse;
@@ -32,7 +31,6 @@ public class MonitoringApplicationService {
     private final VitalSignRecordRepository recordRepo;
     private final VitalSignMapper vitalSignMapper;
 
-
     public MonitoringApplicationService(
             CreateVitalSignCommandHandler createHandler,
             GetMeasurementsByPatientQueryHandler getByPatientHandler,
@@ -52,12 +50,13 @@ public class MonitoringApplicationService {
     }
 
     /**
-     * Crea una nueva medición y analiza automáticamente si hay valores fuera de rango.
+     * Crea una nueva medición vinculada al usuario autenticado (patientId = userId).
+     * El userId proviene directamente del IAM (AuthApplicationService).
      */
-    public VitalSignResponse createMeasurement(CreateVitalSignRequest request) {
+    public VitalSignResponse createMeasurement(CreateVitalSignRequest request, Long patientId) {
         // 1️⃣ Ejecutar comando → guardar medición en BD
         VitalSignResponse response = createHandler.handle(
-                request.patientId(),
+                patientId,
                 request.deviceId(),
                 request.heartRate(),
                 request.oxygenLevel(),
@@ -66,7 +65,7 @@ public class MonitoringApplicationService {
 
         // 2️⃣ Reconstruir entidad de dominio desde la request
         VitalSignRecord record = VitalSignRecord.create(
-                request.patientId(),
+                patientId,
                 request.deviceId(),
                 new HeartRate(request.heartRate()),
                 new OxygenLevel(request.oxygenLevel()),
@@ -76,7 +75,7 @@ public class MonitoringApplicationService {
         // 3️⃣ Procesar posibles alertas de dominio
         alertDomainService.processMeasurement(record);
 
-        // 4️⃣ Emitir evento SSE de la medición al paciente
+        // 4️⃣ Emitir evento SSE de la medición al paciente autenticado
         emitterService.emitVitalSign(record);
 
         return response;
@@ -98,13 +97,15 @@ public class MonitoringApplicationService {
         return getRecentHandler.handle(query);
     }
 
+    /**
+     * Obtiene una medición específica por su ID.
+     */
     public VitalSignResponse getMeasurementById(Long id) {
         var record = recordRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Measurement not found with id " + id
                 ));
-
         return vitalSignMapper.toResponse(record);
     }
 }

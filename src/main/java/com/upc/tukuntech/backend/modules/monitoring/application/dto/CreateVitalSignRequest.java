@@ -8,9 +8,6 @@ import jakarta.validation.constraints.*;
  */
 public record CreateVitalSignRequest(
 
-        @NotNull(message = "El ID del paciente es obligatorio")
-        Long patientId,
-
         @NotNull(message = "El ID del dispositivo es obligatorio")
         Long deviceId,
 
