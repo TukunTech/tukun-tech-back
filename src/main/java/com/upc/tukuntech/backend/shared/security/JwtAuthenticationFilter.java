@@ -35,7 +35,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        // Endpoints públicos (sin autenticación requerida)
         return path.startsWith("/auth")
                 || path.startsWith("/api-docs")
                 || path.startsWith("/v3/api-docs")
